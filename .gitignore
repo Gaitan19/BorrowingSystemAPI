@@ -1,0 +1,52 @@
+# Binaries and intermediates
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+# Visual Studio cache files
+*.vs/
+*.vspscc
+*.vssscc
+*.vsixmanifest
+*.vsix
+*.userprefs
+*.suo
+# MSBuild cache files
+*.build/
+*.build.bak/
+*.build.binlog/
+# NuGet cache files
+*.nuget/
+*.nupkg/
+*.nuspec/
+*.nupkg/
+*.nuspec/
+*.nupkg/
+*.nuspec/
+*.nupkg/
+*.nuspec/
+# ASP.NET Core files
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template.json
+*.runtimeconfig.template

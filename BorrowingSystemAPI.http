@@ -1,0 +1,6 @@
+@BorrowingSystemAPI_HostAddress = http://localhost:5264
+
+GET {{BorrowingSystemAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
