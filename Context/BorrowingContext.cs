@@ -9,7 +9,9 @@ namespace BorrowingSystemAPI.Context
 
         public DbSet<User> Users { get; set; }
         public DbSet<Item> Items { get; set; }
-        public DbSet<ItemMovement> ItemMovements { get; set; }
+        public DbSet<Movement> Movements { get; set; }
+
+        public DbSet<MovementType> MovementTypes { get; set; }
         public DbSet<Request> Requests { get; set; }
         public DbSet<RequestItem> RequestItems { get; set; }
 
@@ -41,6 +43,7 @@ namespace BorrowingSystemAPI.Context
                 .HasForeignKey(m => m.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
             // Relación Request -> RequestItems
             modelBuilder.Entity<RequestItem>()
                 .HasOne(ri => ri.Request)
@@ -57,8 +60,11 @@ namespace BorrowingSystemAPI.Context
             // Agregar filtros de "soft delete"
             modelBuilder.Entity<User>().HasQueryFilter(u => u.DeletedAt == null);
             modelBuilder.Entity<Item>().HasQueryFilter(i => i.DeletedAt == null);
-            modelBuilder.Entity<ItemMovement>().HasQueryFilter(m => m.DeletedAt == null);
+            modelBuilder.Entity<Movement>().HasQueryFilter(m => m.DeletedAt == null);
             modelBuilder.Entity<Request>().HasQueryFilter(r => r.DeletedAt == null);
+            modelBuilder.Entity<RequestItem>().HasQueryFilter(ri => ri.DeletedAt == null);
+            modelBuilder.Entity<MovementType>().HasQueryFilter(mt => mt.DeletedAt == null);
+
         }
     }
 }

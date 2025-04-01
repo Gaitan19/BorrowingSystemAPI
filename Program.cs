@@ -1,4 +1,8 @@
 using BorrowingSystemAPI.Context;
+using BorrowingSystemAPI.Interfaces.Repository;
+using BorrowingSystemAPI.Mapper;
+using BorrowingSystemAPI.Repositories;
+using BorrowingSystemAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +17,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<BorrowingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+
+// Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Services
+
+builder.Services.AddScoped<UserService>();
 
 
 var app = builder.Build();
