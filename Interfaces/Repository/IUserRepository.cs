@@ -5,7 +5,7 @@ namespace BorrowingSystemAPI.Interfaces.Repository
     public interface IUserRepository
     {
         IEnumerable<User> GetAllUsers();
-        User GetUserById(Guid id);
+        User? GetUserById(Guid id);
         User CreateUser(User user);
         User UpdateUser(User user);
 

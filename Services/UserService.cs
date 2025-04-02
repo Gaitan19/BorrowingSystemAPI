@@ -21,7 +21,7 @@ namespace BorrowingSystemAPI.Services
             return _userRepository.GetAllUsers();
         }
 
-        public User GetUserById(Guid id)
+        public User? GetUserById(Guid id)
         {
             return _userRepository.GetUserById(id);
         }
@@ -32,7 +32,7 @@ namespace BorrowingSystemAPI.Services
             return _userRepository.CreateUser(user);
         }
 
-        public User UpdateUser(Guid id,UserDTO userDto)
+        public User? UpdateUser(Guid id,UserDTO userDto)
         {
 
             var existingUser = _userRepository.GetUserById(id);

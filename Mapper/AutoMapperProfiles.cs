@@ -11,6 +11,7 @@ namespace BorrowingSystemAPI.Mapper
         {
 
             CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<User,AuthDTO>().ReverseMap();
 
 
         }

@@ -25,8 +25,12 @@ namespace BorrowingSystemAPI.Repositories
         public void DeleteUser(Guid id)
         {
             var userDeleted = _context.Users.FirstOrDefault(u => u.Id == id);
-            userDeleted.DeletedAt = DateTime.Now;
-            _context.SaveChanges();
+            if (userDeleted != null)
+            {
+                userDeleted.DeletedAt = DateTime.Now;
+                _context.Users.Update(userDeleted);
+                _context.SaveChanges();
+            }
 
         }
 
@@ -35,7 +39,7 @@ namespace BorrowingSystemAPI.Repositories
             return _context.Users.ToList();
         }
 
-        public User GetUserById(Guid id)
+        public User? GetUserById(Guid id)
         {
             return _context.Users.FirstOrDefault(u => u.Id == id);
         }

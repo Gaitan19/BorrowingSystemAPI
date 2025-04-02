@@ -2,10 +2,12 @@
 using BorrowingSystemAPI.DTOs;
 using BorrowingSystemAPI.Models;
 using BorrowingSystemAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BorrowingSystemAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/users")]
     public class UserController : ControllerBase
