@@ -26,6 +26,11 @@ namespace BorrowingSystemAPI.Services
             return _movementTypeRepository.GetMovementTypeById(id);
         }
 
+        public MovementType? GetMovementTypeByName(string name)
+        {
+            return _movementTypeRepository.GetMovementTypeByName(name);
+        }
+
         public MovementType CreateMovementType(MovementTypeDTO movementTypeDto)
         {
             var movementType = _mapper.Map<MovementType>(movementTypeDto);

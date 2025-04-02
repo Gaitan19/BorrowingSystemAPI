@@ -6,6 +6,8 @@ namespace BorrowingSystemAPI.Interfaces.Repository
     {
         IEnumerable<MovementType> GetAllMovementTypes();
         MovementType? GetMovementTypeById(Guid id);
+        MovementType? GetMovementTypeByName(string name);
+
         MovementType CreateMovementType(MovementType movementType);
         MovementType UpdateMovementType(MovementType movementType);
 

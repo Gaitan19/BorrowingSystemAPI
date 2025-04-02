@@ -44,6 +44,11 @@ namespace BorrowingSystemAPI.Repositories
 
         }
 
+        public MovementType? GetMovementTypeByName(string name)
+        {
+            return _context.MovementTypes.FirstOrDefault(u => u.Name == name);
+        }
+
         public MovementType UpdateMovementType(MovementType movementType)
         {
             var updatedMovementType= _context.MovementTypes.Update(movementType);
