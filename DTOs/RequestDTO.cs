@@ -4,7 +4,6 @@ namespace BorrowingSystemAPI.DTOs
 {
     public class RequestDTO
     {
-        public Guid? Id { get; set; }  
         public string Description { get; set; }
         public Guid RequestedByUserId { get; set; }
         public RequestStatus? RequestStatus { get; set; }  
