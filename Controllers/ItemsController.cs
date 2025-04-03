@@ -8,12 +8,12 @@ namespace BorrowingSystemAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/items")]
-    public class ItemController : ControllerBase
+    [Route("api/[controller]")]
+    public class ItemsController : ControllerBase
     {
         private readonly ItemService _itemService;
 
-        public ItemController(ItemService itemService)
+        public ItemsController(ItemService itemService)
         {
             _itemService = itemService;
         }
@@ -50,7 +50,7 @@ namespace BorrowingSystemAPI.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public ActionResult<Item> UpdateItem(Guid id, [FromBody] ItemDTO item)
+        public ActionResult<string> UpdateItem(Guid id, [FromBody] ItemDTO item)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

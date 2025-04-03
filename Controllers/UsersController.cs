@@ -9,13 +9,13 @@ namespace BorrowingSystemAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users")]
-    public class UserController : ControllerBase
+    [Route("api/[controller]")]
+    public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
         private readonly IMapper _mapper;
 
-        public UserController(UserService userService, IMapper mapper)
+        public UsersController(UserService userService, IMapper mapper)
         {
             _userService = userService;
             _mapper = mapper;

@@ -9,13 +9,13 @@ namespace BorrowingSystemAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/movementTypes")]
-    public class MovementTypeController : ControllerBase
+    [Route("api/[controller]")]
+    public class MovementTypesController : ControllerBase
     {
         private readonly MovementTypeService _movementTypeService;
         private readonly IMapper _mapper;
 
-        public MovementTypeController(MovementTypeService movementTypeService, IMapper mapper)
+        public MovementTypesController(MovementTypeService movementTypeService, IMapper mapper)
         {
             _movementTypeService = movementTypeService;
             _mapper = mapper;

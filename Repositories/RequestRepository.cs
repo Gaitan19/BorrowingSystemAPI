@@ -1,6 +1,7 @@
 ﻿using BorrowingSystemAPI.Context;
 using BorrowingSystemAPI.Interfaces.Repository;
 using BorrowingSystemAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BorrowingSystemAPI.Repositories
 {
@@ -27,14 +28,29 @@ namespace BorrowingSystemAPI.Repositories
                 _context.SaveChanges();
             }
         }
+        
+
         public IEnumerable<Request> GetAllRequests()
         {
-            return _context.Requests.ToList();
+            return _context.Requests
+                .AsNoTracking() // 🔹 Desactiva el seguimiento
+                .Include(r => r.RequestedByUser)
+                .Include(r => r.RequestItems)
+                    .ThenInclude(ri => ri.Item)
+                .ToList();
         }
+
         public Request? GetRequestById(Guid id)
         {
-            return _context.Requests.FirstOrDefault(u => u.Id == id);
+            return _context.Requests
+                .AsNoTracking() // 🔹 Desactiva el seguimiento
+                .Include(r => r.RequestedByUser)
+                .Include(r => r.RequestItems)
+                    .ThenInclude(ri => ri.Item)
+                .FirstOrDefault(r => r.Id == id);
         }
+
+
         public Request UpdateRequest(Request request)
         {
             var updatedRequest = _context.Requests.Update(request);

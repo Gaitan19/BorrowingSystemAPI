@@ -26,6 +26,15 @@ builder.Services.AddControllers(opt =>
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
 
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+    });
+
+
+
+
 // Configurar Swagger con autenticación JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -57,7 +66,10 @@ builder.Services.AddSwaggerGen(c =>
 
 // Configurar base de datos
 builder.Services.AddDbContext<BorrowingContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.EnableSensitiveDataLogging(); // Habilita el registro de datos sensibles
+});
 
 // Configurar AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);

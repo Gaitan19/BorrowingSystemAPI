@@ -9,59 +9,48 @@ namespace BorrowingSystemAPI.Services
 {
     public class RequestService
     {
-        //private readonly IRequestRepository _requestRepository;
-        //private readonly IMapper _mapper;
-
-        //public RequestService(IRequestRepository requestRepository, IMapper mapper)
-        //{
-        //    _requestRepository = requestRepository;
-        //    _mapper = mapper;
-        //}
-
-        //public Request CreateRequest(RequestDTO requestDTO)
-        //{
-        //    var request = _mapper.Map<Request>(requestDTO);
-
-        //    return _requestRepository.CreateRequest(request);
-        //}
-
-        //public IEnumerable<Request> GetAllRequests()
-        //{
-        //    var requests = _requestRepository.GetAllRequests();
-        //    return requests;
-        //}
-
-        //public Request? GetRequestById(Guid id)
-        //{
-        //    return _requestRepository.GetRequestById(id);
-        //}
-
-        //public Request? UpdateRequest(Guid id ,RequestDTO requestDTO)
-        //{
-        //    var existingRequest = _requestRepository.GetRequestById(id);
-        //    if (existingRequest == null) return null;
-        //    _mapper.Map(requestDTO, existingRequest);
-        //    return _requestRepository.UpdateRequest(existingRequest);
-        //}
-
-        //public void DeleteRequest(Guid id)
-        //{
-        //    _requestRepository.DeleteRequest(id);
-        //}
+        
 
         private readonly IRequestRepository _requestRepository;
         private readonly IRequestItemRepository _requestItemRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IMovementRepository _movementRepository;
         private readonly IMovementTypeRepository _movementTypeRepository;
+        private readonly IMapper _mapper;
 
-        public RequestService(IRequestRepository requestRepository, IRequestItemRepository requestItemRepository, IItemRepository itemRepository, IMovementRepository movementRepository, IMovementTypeRepository movementTypeRepository)
+
+        public RequestService(IRequestRepository requestRepository, IRequestItemRepository requestItemRepository, IItemRepository itemRepository, IMovementRepository movementRepository, IMovementTypeRepository movementTypeRepository, IMapper mapper)
         {
             _requestRepository = requestRepository;
             _requestItemRepository = requestItemRepository;
             _itemRepository = itemRepository;
             _movementRepository = movementRepository;
             _movementTypeRepository = movementTypeRepository;
+            _mapper = mapper;
+        }
+
+        public IEnumerable<Request> GetAllRequests()
+        {
+            var requests = _requestRepository.GetAllRequests();
+            return requests;
+        }
+
+        public Request? GetRequestById(Guid id)
+        {
+            return _requestRepository.GetRequestById(id);
+        }
+
+        public Request? UpdateRequest(Guid id, RequestDTO requestDTO)
+        {
+            var existingRequest = _requestRepository.GetRequestById(id);
+            if (existingRequest == null) return null;
+            _mapper.Map(requestDTO, existingRequest);
+            return _requestRepository.UpdateRequest(existingRequest);
+        }
+
+        public void DeleteRequest(Guid id)
+        {
+            _requestRepository.DeleteRequest(id);
         }
 
         public RequestDTO CreateRequest(CreateRequestDTO requestDto)
@@ -112,14 +101,16 @@ namespace BorrowingSystemAPI.Services
 
                 foreach (var reqItem in request.RequestItems)
                 {
-                    var item = _itemRepository.GetItemById(reqItem.ItemId);
+                    var item = reqItem.Item;
                     if (item == null) return $"Item {reqItem.ItemId} no encontrado.";
 
                     if (item.Quantity < reqItem.Quantity)
                         return $"Stock insuficiente para el item {item.Name}.";
 
                     item.Quantity -= reqItem.Quantity;
+
                     _itemRepository.UpdateItem(item);
+
 
                     var movement = new Movement
                     {

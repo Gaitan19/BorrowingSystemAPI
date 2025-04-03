@@ -1,6 +1,7 @@
 ﻿using BorrowingSystemAPI.Context;
 using BorrowingSystemAPI.Interfaces.Repository;
 using BorrowingSystemAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BorrowingSystemAPI.Repositories
 {
@@ -40,16 +41,24 @@ namespace BorrowingSystemAPI.Repositories
 
         public Item? GetItemById(Guid id)
         {
-            return _context.Items.FirstOrDefault(u => u.Id == id);
+            return _context.Items.AsNoTracking().FirstOrDefault(i => i.Id == id);
 
         }
 
-        public Item UpdateItem(Item item)
+        public string UpdateItem(Item item)
         {
-            var updatedItem= _context.Items.Update(item);
+
+            var trackedItem = _context.Items.Local.FirstOrDefault(i => i.Id == item.Id);
+            if (trackedItem != null)
+            {
+                _context.Entry(trackedItem).State = EntityState.Detached; // 🔹 Se desconecta el anterior
+            }
+
+            _context.Attach(item); // 🔹 Se adjunta el nuevo sin forzar la actualización
+            _context.Entry(item).State = EntityState.Modified; // 🔹 Se marcan solo los cambios
             _context.SaveChanges();
 
-            return updatedItem.Entity;
+            return "Item Updated Successfuly";
         }
     }
 }
