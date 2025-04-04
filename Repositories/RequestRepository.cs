@@ -28,7 +28,17 @@ namespace BorrowingSystemAPI.Repositories
                 _context.SaveChanges();
             }
         }
-        
+
+        public void DeleteRequestPermanently(Guid id)
+        {
+            var requestToDelete = _context.Requests.FirstOrDefault(u => u.Id == id);
+            if (requestToDelete != null)
+            {
+                _context.Requests.Remove(requestToDelete);
+                _context.SaveChanges();
+            }
+        }
+
 
         public IEnumerable<Request> GetAllRequests()
         {
@@ -47,6 +57,13 @@ namespace BorrowingSystemAPI.Repositories
                 .Include(r => r.RequestedByUser)
                 .Include(r => r.RequestItems)
                     .ThenInclude(ri => ri.Item)
+                .FirstOrDefault(r => r.Id == id);
+        }
+
+        public Request? GetRequestWithoutRelationsById(Guid id)
+        {
+            return _context.Requests
+                .AsNoTracking() // 🔹 Desactiva el seguimiento
                 .FirstOrDefault(r => r.Id == id);
         }
 

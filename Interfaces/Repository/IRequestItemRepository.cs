@@ -9,5 +9,8 @@ namespace BorrowingSystemAPI.Interfaces.Repository
         RequestItem CreateRequestItem(RequestItem requestItem);
         RequestItem UpdateRequestItem(RequestItem requestItem);
         void DeleteRequestItem(Guid id);
+
+        void DeleteItemsByRequestId(Guid requestId);
+
     }
 }

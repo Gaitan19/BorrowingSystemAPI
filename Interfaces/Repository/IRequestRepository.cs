@@ -6,8 +6,12 @@ namespace BorrowingSystemAPI.Interfaces.Repository
     {
         Request CreateRequest(Request request);
         void DeleteRequest(Guid id);
+        void DeleteRequestPermanently(Guid id);
         IEnumerable<Request> GetAllRequests();
         Request? GetRequestById(Guid id);
+
+        Request? GetRequestWithoutRelationsById(Guid id);
+
         Request UpdateRequest(Request request);
     }
 }

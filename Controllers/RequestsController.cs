@@ -55,7 +55,7 @@ namespace BorrowingSystemAPI.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public ActionResult<RequestDTO> UpdateRequest(Guid id, [FromBody] RequestDTO requestDto)
+        public ActionResult<RequestDTO> UpdateRequest(Guid id, [FromBody] UpdateRequestDTO requestDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -64,6 +64,10 @@ namespace BorrowingSystemAPI.Controllers
                 var updatedRequest = _requestService.UpdateRequest(id, requestDto);
                 if (updatedRequest == null) return NotFound(new { message = "Request not found" });
                 return Ok(updatedRequest);
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -102,6 +106,24 @@ namespace BorrowingSystemAPI.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while processing the return", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id:guid}")]
+        public IActionResult DeleteRequest(Guid id)
+        {
+            try
+            {
+                _requestService.DeleteRequest(id);
+                return NoContent();
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the request", error = ex.Message });
             }
         }
     }

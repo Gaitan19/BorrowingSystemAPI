@@ -49,6 +49,16 @@ namespace BorrowingSystemAPI.Repositories
             return updatedRequestItem.Entity;
         }
 
+        public void DeleteItemsByRequestId(Guid requestId)
+        {
+            var items = _context.RequestItems.Where(ri => ri.RequestId == requestId).ToList();
+          
+            if (items.Count > 0)
+            {
+                _context.RequestItems.RemoveRange(items);
+                _context.SaveChanges();
+            }
+        }
 
     }
 }

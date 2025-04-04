@@ -1,4 +1,6 @@
-﻿namespace BorrowingSystemAPI.DTOs
+﻿using BorrowingSystemAPI.Models;
+
+namespace BorrowingSystemAPI.DTOs
 {
     public class RequestItemDTO
     {

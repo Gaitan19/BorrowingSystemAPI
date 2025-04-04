@@ -5,6 +5,7 @@ using BorrowingSystemAPI.Exceptions;
 using BorrowingSystemAPI.Interfaces.Repository;
 using BorrowingSystemAPI.Models;
 using BorrowingSystemAPI.Repositories;
+using RequestItemDTO = BorrowingSystemAPI.DTOs.RequestDTOs.RequestItemDTO;
 
 namespace BorrowingSystemAPI.Services
 {
@@ -41,16 +42,72 @@ namespace BorrowingSystemAPI.Services
             return _requestRepository.GetRequestById(id);
         }
 
-        public Request? UpdateRequest(Guid id, RequestDTO requestDTO)
+
+        public RequestDTO UpdateRequest(Guid id,UpdateRequestDTO dto)
         {
-            var existingRequest = _requestRepository.GetRequestById(id);
-            if (existingRequest == null) return null;
-            _mapper.Map(requestDTO, existingRequest);
-            return _requestRepository.UpdateRequest(existingRequest);
+            var existingRequest = _requestRepository.GetRequestWithoutRelationsById(id);
+
+
+            if (existingRequest == null)
+                throw new ServiceException("Request not found.", 404);
+
+            if(existingRequest.RequestStatus != RequestStatus.Pending || existingRequest.ReturnStatus == ReturnStatus.Returned )
+                throw new ServiceException("You cannot edit an approved or rejected request..", 400);
+
+
+            existingRequest.Description = dto.Description;
+
+            _requestItemRepository.DeleteItemsByRequestId(id);
+
+            var updatedRequestItems = new List<RequestItemDTO>();
+
+            foreach (var reqItemDto in dto.RequestItems)
+            {
+                var item = _itemRepository.GetItemById(reqItemDto.ItemId);
+                if (item == null)
+                    throw new ServiceException($"Item {reqItemDto.ItemId} not found.", 404);
+
+                if (item.Quantity < reqItemDto.Quantity)
+                    throw new ServiceException($"Insufficient stock for the item {item.Name}.", 400);
+
+                var requestItem = new RequestItem
+                {
+                    RequestId = id,
+                    ItemId = reqItemDto.ItemId,
+                    Quantity = reqItemDto.Quantity
+                };
+
+                _requestItemRepository.CreateRequestItem(requestItem);
+
+                updatedRequestItems.Add(new RequestItemDTO
+                {
+                    ItemId = requestItem.ItemId,
+                    Quantity = requestItem.Quantity
+                });
+            }
+
+            _requestRepository.UpdateRequest(existingRequest);
+
+            return new RequestDTO
+            {
+                Id = existingRequest.Id,
+                Description = existingRequest.Description,
+                RequestedByUserId = existingRequest.RequestedByUserId,
+                RequestStatus = existingRequest.RequestStatus,
+                ReturnStatus = existingRequest.ReturnStatus,
+                RequestDate = existingRequest.RequestDate,
+                RequestItems = updatedRequestItems
+            };
         }
+
 
         public void DeleteRequest(Guid id)
         {
+
+            var existingRequest = _requestRepository.GetRequestById(id);
+            if (existingRequest == null)
+                throw new ServiceException("Request not found.", 404);
+
             _requestRepository.DeleteRequest(id);
         }
 
@@ -66,7 +123,7 @@ namespace BorrowingSystemAPI.Services
 
             var user = _userRepository.GetUserById(requestDto.RequestedByUserId);
             if (user == null)
-                throw new ServiceException("Usuario no encontrado.", 404);
+                throw new ServiceException("User not found.", 404);
 
             var createdRequest = _requestRepository.CreateRequest(newRequest);
 
@@ -74,11 +131,16 @@ namespace BorrowingSystemAPI.Services
             {
                 var item = _itemRepository.GetItemById(reqItem.ItemId);
                 if (item == null)
-                    throw new ServiceException($"Item {reqItem.ItemId} no encontrado.", 404);
+                {
+                    _requestRepository.DeleteRequestPermanently(createdRequest.Id);
+                    throw new ServiceException($"Item {reqItem.ItemId} not found.", 404);
+                }
 
                 if (item.Quantity < reqItem.Quantity)
-                    throw new ServiceException($"Stock insuficiente para el item {item.Name}.", 400);
-
+                { 
+                    _requestRepository.DeleteRequestPermanently(createdRequest.Id);
+                    throw new ServiceException($"Insufficient stock for the item {item.Name}.", 400);
+                }
                 var requestItem = new RequestItem
                 {
                     RequestId = createdRequest.Id,
@@ -105,22 +167,25 @@ namespace BorrowingSystemAPI.Services
         {
             var request = _requestRepository.GetRequestById(dto.RequestId);
             if (request == null)
-                throw new ServiceException("Solicitud no encontrada.", 404);
+                throw new ServiceException("Request not found.", 404);
+
+            if (request.RequestStatus != RequestStatus.Pending)
+                throw new ServiceException("Only pending applications can be approved or rejected..", 400);
 
             if (dto.IsApproved)
             {
                 var movementTypeOut = _movementTypeRepository.GetMovementTypeByName("out");
                 if (movementTypeOut == null)
-                    throw new ServiceException("Tipo de movimiento 'out' no encontrado.", 500);
+                    throw new ServiceException("Movement type 'out' not found.", 500);
 
                 foreach (var reqItem in request.RequestItems)
                 {
                     var item = reqItem.Item;
                     if (item == null)
-                        throw new ServiceException($"Item {reqItem.ItemId} no encontrado.", 404);
+                        throw new ServiceException($"Item {reqItem.ItemId} not found.", 404);
 
                     if (item.Quantity < reqItem.Quantity)
-                        throw new ServiceException($"Stock insuficiente para el item {item.Name}.", 400);
+                        throw new ServiceException($"Insufficient stock for the item {item.Name}.", 400);
 
                     item.Quantity -= reqItem.Quantity;
                     _itemRepository.UpdateItem(item);
@@ -143,26 +208,26 @@ namespace BorrowingSystemAPI.Services
             }
 
             _requestRepository.UpdateRequest(request);
-            return dto.IsApproved ? "Solicitud aprobada y stock actualizado." : "Solicitud rechazada.";
+            return dto.IsApproved ? "Request approved and stock updated." : "Request rejected.";
         }
 
 
         public string ReturnItems(Guid requestId)
         {
             var request = _requestRepository.GetRequestById(requestId);
-            if (request == null) return "Solicitud no encontrada.";
+            if (request == null) return "Request not found.";
 
             if (request.RequestStatus != RequestStatus.Approved || request.ReturnStatus == ReturnStatus.Returned)
-                return "La solicitud no es elegible para devolución.";
+                return "The application is not eligible for a refund.";
 
             var movementTypeIn = _movementTypeRepository.GetMovementTypeByName("in");
-            if (movementTypeIn == null) return "Tipo de movimiento 'in' no encontrado.";
+            if (movementTypeIn == null) return "Movement type 'in' not found.";
 
             foreach (var reqItem in request.RequestItems)
             {
                 var item = reqItem.Item;
 
-                if (item == null) return $"Item {reqItem.ItemId} no encontrado.";
+                if (item == null) return $"Item {reqItem.ItemId} not found.";
 
                 item.Quantity += reqItem.Quantity;
                 _itemRepository.UpdateItem(item);
@@ -180,7 +245,7 @@ namespace BorrowingSystemAPI.Services
             request.ReturnStatus = ReturnStatus.Returned;
             _requestRepository.UpdateRequest(request);
 
-            return "Los ítems fueron devueltos correctamente.";
+            return "The items were returned correctly.";
         }
     }
 }

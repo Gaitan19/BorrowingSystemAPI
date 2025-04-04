@@ -60,5 +60,20 @@ namespace BorrowingSystemAPI.Repositories
 
             return "Item Updated Successfuly";
         }
+
+        public bool ItemExists(Guid id)
+        {
+            return _context.Items.Any(i => i.Id == id);
+        }
+
+        public int GetItemQuantity(Guid id)
+        {
+            var item = _context.Items.FirstOrDefault(i => i.Id == id);
+            if (item != null)
+            {
+                return item.Quantity;
+            }
+            return 0;
+        }
     }
 }

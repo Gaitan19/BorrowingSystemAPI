@@ -9,5 +9,9 @@ namespace BorrowingSystemAPI.Interfaces.Repository
         Item CreateItem(Item item);
         string UpdateItem(Item item);
         void DeleteItem(Guid id);
+
+        bool ItemExists(Guid id);
+
+        int GetItemQuantity(Guid id);
     }
 }
