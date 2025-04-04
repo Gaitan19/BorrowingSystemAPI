@@ -49,13 +49,17 @@ namespace BorrowingSystemAPI.Repositories
             return updatedRequestItem.Entity;
         }
 
-        public void DeleteItemsByRequestId(Guid requestId)
+        public void DeleteItemsByRequestIdExcluding(Guid requestId, List<RequestItem> newRequestItems)
         {
-            var items = _context.RequestItems.Where(ri => ri.RequestId == requestId).ToList();
-          
-            if (items.Count > 0)
+            var newItemIds = newRequestItems.Select(item => item.Id).ToHashSet();
+
+            var itemsToDelete = _context.RequestItems
+                .Where(ri => ri.RequestId == requestId && !newItemIds.Contains(ri.Id))
+                .ToList();
+
+            if (itemsToDelete.Any())
             {
-                _context.RequestItems.RemoveRange(items);
+                _context.RequestItems.RemoveRange(itemsToDelete);
                 _context.SaveChanges();
             }
         }

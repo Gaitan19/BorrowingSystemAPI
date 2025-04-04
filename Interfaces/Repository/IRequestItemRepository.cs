@@ -10,7 +10,7 @@ namespace BorrowingSystemAPI.Interfaces.Repository
         RequestItem UpdateRequestItem(RequestItem requestItem);
         void DeleteRequestItem(Guid id);
 
-        void DeleteItemsByRequestId(Guid requestId);
+        void DeleteItemsByRequestIdExcluding(Guid requestId, List<RequestItem> newRequestItems);
 
     }
 }

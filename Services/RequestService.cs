@@ -57,9 +57,10 @@ namespace BorrowingSystemAPI.Services
 
             existingRequest.Description = dto.Description;
 
-            _requestItemRepository.DeleteItemsByRequestId(id);
 
             var updatedRequestItems = new List<RequestItemDTO>();
+
+            var newRequestItems = new List<RequestItem>();
 
             foreach (var reqItemDto in dto.RequestItems)
             {
@@ -77,7 +78,9 @@ namespace BorrowingSystemAPI.Services
                     Quantity = reqItemDto.Quantity
                 };
 
-                _requestItemRepository.CreateRequestItem(requestItem);
+                var newRequestItem = _requestItemRepository.CreateRequestItem(requestItem);
+
+                newRequestItems.Add(newRequestItem);
 
                 updatedRequestItems.Add(new RequestItemDTO
                 {
@@ -85,6 +88,10 @@ namespace BorrowingSystemAPI.Services
                     Quantity = requestItem.Quantity
                 });
             }
+
+
+            _requestItemRepository.DeleteItemsByRequestIdExcluding(id, newRequestItems);
+
 
             _requestRepository.UpdateRequest(existingRequest);
 
