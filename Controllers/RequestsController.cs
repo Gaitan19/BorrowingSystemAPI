@@ -1,5 +1,6 @@
 ﻿using BorrowingSystemAPI.DTOs;
 using BorrowingSystemAPI.DTOs.RequestDTOs;
+using BorrowingSystemAPI.Exceptions;
 using BorrowingSystemAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,10 @@ namespace BorrowingSystemAPI.Controllers
             {
                 var createdRequest = _requestService.CreateRequest(requestDto);
                 return CreatedAtAction(nameof(GetRequestById), new { id = createdRequest.Id }, createdRequest);
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -75,6 +80,10 @@ namespace BorrowingSystemAPI.Controllers
             {
                 var result = _requestService.ApproveOrRejectRequest(dto);
                 return Ok(new { message = result });
+            }
+            catch (ServiceException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
             }
             catch (Exception ex)
             {
