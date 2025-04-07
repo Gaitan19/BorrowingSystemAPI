@@ -52,7 +52,7 @@ namespace BorrowingSystemAPI.Services
                 throw new ServiceException("Request not found.", 404);
 
             if(existingRequest.RequestStatus != RequestStatus.Pending || existingRequest.ReturnStatus == ReturnStatus.Returned )
-                throw new ServiceException("You cannot edit an approved or rejected request..", 400);
+                throw new ServiceException("You cannot edit an approved or rejected request.", 400);
 
 
             existingRequest.Description = dto.Description;
@@ -177,7 +177,7 @@ namespace BorrowingSystemAPI.Services
                 throw new ServiceException("Request not found.", 404);
 
             if (request.RequestStatus != RequestStatus.Pending)
-                throw new ServiceException("Only pending applications can be approved or rejected..", 400);
+                throw new ServiceException("Only pending applications can be approved or rejected.", 400);
 
             if (dto.IsApproved)
             {
