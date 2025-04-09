@@ -2,13 +2,22 @@
 
 namespace BorrowingSystemAPI.Exceptions
 {
+    public enum ErrorCode
+    {
+        NotFound,
+        BadRequest,
+        Unauthorized,
+        Forbidden,
+        InternalServerError
+    }
+
     public class ServiceException : Exception
     {
-        public int StatusCode { get; }
+        public ErrorCode ErrorCode { get; }
 
-        public ServiceException(string message, int statusCode = 400) : base(message)
+        public ServiceException(string message, ErrorCode errorCode) : base(message)
         {
-            StatusCode = statusCode;
+            ErrorCode = errorCode;
         }
     }
 }

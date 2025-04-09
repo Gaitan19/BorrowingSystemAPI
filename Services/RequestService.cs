@@ -45,14 +45,14 @@ namespace BorrowingSystemAPI.Services
 
         public RequestDTO UpdateRequest(Guid id,UpdateRequestDTO dto)
         {
-            var existingRequest = _requestRepository.GetRequestWithoutRelationsById(id);
+            var existingRequest = _requestRepository.GetRequestById(id,false);
 
 
             if (existingRequest == null)
-                throw new ServiceException("Request not found.", 404);
+                throw new ServiceException("Request not found.", ErrorCode.NotFound);
 
             if(existingRequest.RequestStatus != RequestStatus.Pending || existingRequest.ReturnStatus == ReturnStatus.Returned )
-                throw new ServiceException("You cannot edit an approved or rejected request.", 400);
+                throw new ServiceException("You cannot edit an approved or rejected request.", ErrorCode.BadRequest);
 
 
             existingRequest.Description = dto.Description;
@@ -66,10 +66,10 @@ namespace BorrowingSystemAPI.Services
             {
                 var item = _itemRepository.GetItemById(reqItemDto.ItemId);
                 if (item == null)
-                    throw new ServiceException($"Item {reqItemDto.ItemId} not found.", 404);
+                    throw new ServiceException($"Item {reqItemDto.ItemId} not found.", ErrorCode.NotFound);
 
                 if (item.Quantity < reqItemDto.Quantity)
-                    throw new ServiceException($"Insufficient stock for the item {item.Name}.", 400);
+                    throw new ServiceException($"Insufficient stock for the item {item.Name}.", ErrorCode.BadRequest);
 
                 var requestItem = new RequestItem
                 {
@@ -113,7 +113,7 @@ namespace BorrowingSystemAPI.Services
 
             var existingRequest = _requestRepository.GetRequestById(id);
             if (existingRequest == null)
-                throw new ServiceException("Request not found.", 404);
+                throw new ServiceException("Request not found.", ErrorCode.NotFound);
 
             _requestRepository.DeleteRequest(id);
         }
@@ -130,7 +130,7 @@ namespace BorrowingSystemAPI.Services
 
             var user = _userRepository.GetUserById(requestDto.RequestedByUserId);
             if (user == null)
-                throw new ServiceException("User not found.", 404);
+                throw new ServiceException("User not found.", ErrorCode.NotFound);
 
             var createdRequest = _requestRepository.CreateRequest(newRequest);
 
@@ -140,13 +140,13 @@ namespace BorrowingSystemAPI.Services
                 if (item == null)
                 {
                     _requestRepository.DeleteRequestPermanently(createdRequest.Id);
-                    throw new ServiceException($"Item {reqItem.ItemId} not found.", 404);
+                    throw new ServiceException($"Item {reqItem.ItemId} not found.", ErrorCode.NotFound);
                 }
 
                 if (item.Quantity < reqItem.Quantity)
                 { 
                     _requestRepository.DeleteRequestPermanently(createdRequest.Id);
-                    throw new ServiceException($"Insufficient stock for the item {item.Name}.", 400);
+                    throw new ServiceException($"Insufficient stock for the item {item.Name}.", ErrorCode.BadRequest);
                 }
                 var requestItem = new RequestItem
                 {
@@ -174,25 +174,25 @@ namespace BorrowingSystemAPI.Services
         {
             var request = _requestRepository.GetRequestById(dto.RequestId);
             if (request == null)
-                throw new ServiceException("Request not found.", 404);
+                throw new ServiceException("Request not found.", ErrorCode.NotFound);
 
             if (request.RequestStatus != RequestStatus.Pending)
-                throw new ServiceException("Only pending applications can be approved or rejected.", 400);
+                throw new ServiceException("Only pending applications can be approved or rejected.", ErrorCode.BadRequest);
 
             if (dto.IsApproved)
             {
                 var movementTypeOut = _movementTypeRepository.GetMovementTypeByName("out");
                 if (movementTypeOut == null)
-                    throw new ServiceException("Movement type 'out' not found.", 500);
+                    throw new ServiceException("Movement type 'out' not found.", ErrorCode.NotFound);
 
                 foreach (var reqItem in request.RequestItems)
                 {
                     var item = reqItem.Item;
                     if (item == null)
-                        throw new ServiceException($"Item {reqItem.ItemId} not found.", 404);
+                        throw new ServiceException($"Item {reqItem.ItemId} not found.", ErrorCode.NotFound);
 
                     if (item.Quantity < reqItem.Quantity)
-                        throw new ServiceException($"Insufficient stock for the item {item.Name}.", 400);
+                        throw new ServiceException($"Insufficient stock for the item {item.Name}.", ErrorCode.BadRequest);
 
                     item.Quantity -= reqItem.Quantity;
                     _itemRepository.UpdateItem(item);
@@ -219,22 +219,24 @@ namespace BorrowingSystemAPI.Services
         }
 
 
+
         public string ReturnItems(Guid requestId)
         {
             var request = _requestRepository.GetRequestById(requestId);
-            if (request == null) return "Request not found.";
+            if (request == null) throw new ServiceException("Request not found.", ErrorCode.NotFound);
 
             if (request.RequestStatus != RequestStatus.Approved || request.ReturnStatus == ReturnStatus.Returned)
-                return "The application is not eligible for a refund.";
+                throw new ServiceException("Only approved requests can be returned.", ErrorCode.BadRequest);
 
             var movementTypeIn = _movementTypeRepository.GetMovementTypeByName("in");
-            if (movementTypeIn == null) return "Movement type 'in' not found.";
+
+            if (movementTypeIn == null) throw new ServiceException("Movement type 'in' not found.", ErrorCode.NotFound);
 
             foreach (var reqItem in request.RequestItems)
             {
                 var item = reqItem.Item;
 
-                if (item == null) return $"Item {reqItem.ItemId} not found.";
+                if (item == null) throw new ServiceException($"Item {reqItem.ItemId} not found.", ErrorCode.NotFound);
 
                 item.Quantity += reqItem.Quantity;
                 _itemRepository.UpdateItem(item);

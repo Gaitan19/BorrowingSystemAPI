@@ -43,29 +43,31 @@ namespace BorrowingSystemAPI.Repositories
         public IEnumerable<Request> GetAllRequests()
         {
             return _context.Requests
-                .AsNoTracking() // 🔹 Desactiva el seguimiento
+                .AsNoTracking() 
                 .Include(r => r.RequestedByUser)
                 .Include(r => r.RequestItems)
                     .ThenInclude(ri => ri.Item)
                 .ToList();
         }
 
-        public Request? GetRequestById(Guid id)
+
+        public Request? GetRequestById(Guid id, bool includeRelations = true)
         {
+            if (includeRelations)
+            {
+                return _context.Requests
+                   .AsNoTracking()
+                   .Include(r => r.RequestedByUser)
+                   .Include(r => r.RequestItems)
+                       .ThenInclude(ri => ri.Item)
+                   .FirstOrDefault(r => r.Id == id);
+            }
+
             return _context.Requests
-                .AsNoTracking() // 🔹 Desactiva el seguimiento
-                .Include(r => r.RequestedByUser)
-                .Include(r => r.RequestItems)
-                    .ThenInclude(ri => ri.Item)
+                .AsNoTracking()
                 .FirstOrDefault(r => r.Id == id);
         }
 
-        public Request? GetRequestWithoutRelationsById(Guid id)
-        {
-            return _context.Requests
-                .AsNoTracking() // 🔹 Desactiva el seguimiento
-                .FirstOrDefault(r => r.Id == id);
-        }
 
 
         public Request UpdateRequest(Request request)

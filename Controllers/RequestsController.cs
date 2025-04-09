@@ -2,6 +2,7 @@
 using BorrowingSystemAPI.DTOs.RequestDTOs;
 using BorrowingSystemAPI.Exceptions;
 using BorrowingSystemAPI.Services;
+using BorrowingSystemAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ namespace BorrowingSystemAPI.Controllers
             }
             catch (ServiceException ex)
             {
-                return StatusCode(ex.StatusCode, new { message = ex.Message });
+                return StatusCode(ExceptionMapping.MapExceptionToControllers(ex.ErrorCode), new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -67,7 +68,7 @@ namespace BorrowingSystemAPI.Controllers
             }
             catch (ServiceException ex)
             {
-                return StatusCode(ex.StatusCode, new { message = ex.Message });
+                return StatusCode(ExceptionMapping.MapExceptionToControllers(ex.ErrorCode), new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -87,7 +88,7 @@ namespace BorrowingSystemAPI.Controllers
             }
             catch (ServiceException ex)
             {
-                return StatusCode(ex.StatusCode, new { message = ex.Message });
+                return StatusCode(ExceptionMapping.MapExceptionToControllers(ex.ErrorCode), new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -119,7 +120,7 @@ namespace BorrowingSystemAPI.Controllers
             }
             catch (ServiceException ex)
             {
-                return StatusCode(ex.StatusCode, new { message = ex.Message });
+                return StatusCode(ExceptionMapping.MapExceptionToControllers(ex.ErrorCode), new { message = ex.Message });
             }
             catch (Exception ex)
             {

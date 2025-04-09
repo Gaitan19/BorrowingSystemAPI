@@ -8,9 +8,7 @@ namespace BorrowingSystemAPI.Interfaces.Repository
         void DeleteRequest(Guid id);
         void DeleteRequestPermanently(Guid id);
         IEnumerable<Request> GetAllRequests();
-        Request? GetRequestById(Guid id);
-
-        Request? GetRequestWithoutRelationsById(Guid id);
+        Request? GetRequestById(Guid id, bool includeRelations = true);
 
         Request UpdateRequest(Request request);
     }

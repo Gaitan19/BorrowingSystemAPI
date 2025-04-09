@@ -1,4 +1,5 @@
-﻿using BorrowingSystemAPI.Context;
+﻿using AutoMapper;
+using BorrowingSystemAPI.Context;
 using BorrowingSystemAPI.DTOs;
 using BorrowingSystemAPI.Interfaces.Repository;
 using BorrowingSystemAPI.Models;
@@ -10,10 +11,12 @@ namespace BorrowingSystemAPI.Repositories
     {
 
         private readonly BorrowingContext _context;
+        private readonly IMapper _mapper;
 
-        public AuthRepository(BorrowingContext context)
+        public AuthRepository(BorrowingContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public  AuthDTO? Login(string Email, string Password)
@@ -24,13 +27,9 @@ namespace BorrowingSystemAPI.Repositories
 
             if (!VerifyPasswordHash(Password, user.Password)) return null;
 
-            var authUser = new AuthDTO {
-                Id = user.Id,
-                Password = user.Password,
-                Email = user.Email,
-                Name = user.Name,
-                Role = user.Role
-            };
+
+             var authUser = _mapper.Map<AuthDTO>(user);
+            
 
             return authUser;
         }
