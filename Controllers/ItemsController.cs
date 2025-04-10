@@ -18,12 +18,15 @@ namespace BorrowingSystemAPI.Controllers
             _itemService = itemService;
         }
 
+       
+
         [HttpGet]
-        public ActionResult<IEnumerable<Item>> GetAllItems()
+        public ActionResult<IEnumerable<Item>> GetAllItems([FromQuery] int? page, [FromQuery] int? pageSize)
         {
-            var items = _itemService.GetAllItems();
+            var items = _itemService.GetAllItems(page, pageSize);
             return Ok(items);
         }
+
 
         [HttpGet("{id:guid}")]
         public ActionResult<Item> GetItemById(Guid id)

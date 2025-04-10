@@ -16,10 +16,20 @@ namespace BorrowingSystemAPI.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<Item> GetAllItems()
+        
+
+        public IEnumerable<Item> GetAllItems(int? page = null, int? pageSize = null)
         {
-            return _itemRepository.GetAllItems();
+            var items = _itemRepository.GetAllItems();
+
+            if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
+            {
+                return items.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
+            }
+
+            return items;
         }
+
 
         public Item? GetItemById(Guid id)
         {
