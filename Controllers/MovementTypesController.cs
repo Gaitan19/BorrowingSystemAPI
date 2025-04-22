@@ -46,7 +46,7 @@ namespace BorrowingSystemAPI.Controllers
             try
             {
                 var newMovementType= _movementTypeService.CreateMovementType(movementTypeDto);
-                return CreatedAtAction(nameof(GetMovementTypeById), new { id = newMovementType.Id }, newMovementType);
+                return Ok(newMovementType);
             }
             catch (Exception ex)
             {

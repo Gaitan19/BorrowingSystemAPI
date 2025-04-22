@@ -44,7 +44,7 @@ namespace BorrowingSystemAPI.Controllers
             try
             {
                 var newItem = _itemService.CreateItem(item);
-                return CreatedAtAction(nameof(GetItemById), new { id = newItem.Id }, newItem);
+                return Ok(newItem);
             }
             catch (Exception ex)
             {

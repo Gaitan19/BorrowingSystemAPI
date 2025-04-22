@@ -45,20 +45,12 @@ namespace BorrowingSystemAPI.Repositories
 
         }
 
-        public string UpdateItem(Item item)
+        public Item UpdateItem(Item item)
         {
 
-            var trackedItem = _context.Items.Local.FirstOrDefault(i => i.Id == item.Id);
-            if (trackedItem != null)
-            {
-                _context.Entry(trackedItem).State = EntityState.Detached; // 🔹 Se desconecta el anterior
-            }
-
-            _context.Attach(item); // 🔹 Se adjunta el nuevo sin forzar la actualización
-            _context.Entry(item).State = EntityState.Modified; // 🔹 Se marcan solo los cambios
+            var updatedItem = _context.Items.Update(item);
             _context.SaveChanges();
-
-            return "Item Updated Successfuly";
+            return updatedItem.Entity;
         }
 
         public bool ItemExists(Guid id)

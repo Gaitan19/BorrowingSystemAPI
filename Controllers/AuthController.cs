@@ -54,7 +54,7 @@ namespace BorrowingSystemAPI.Controllers
             if (userExists) return Conflict(new { message = "User already exists" });
 
             var newUser = _authService.Register(userDto);
-            return CreatedAtAction(nameof(Login), new { email = newUser.Email }, _mapper.Map<UserDTO>(newUser));
+            return Ok(newUser);
         }
     }
 }

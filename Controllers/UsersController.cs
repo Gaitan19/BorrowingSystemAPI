@@ -46,7 +46,7 @@ namespace BorrowingSystemAPI.Controllers
             try
             {
                 var newUser = _userService.CreateUser(userDto);
-                return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, newUser);
+                return Ok(newUser);
             }
             catch (Exception ex)
             {

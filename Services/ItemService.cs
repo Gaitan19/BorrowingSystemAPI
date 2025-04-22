@@ -42,7 +42,7 @@ namespace BorrowingSystemAPI.Services
             return _itemRepository.CreateItem(item);
         }
 
-        public string? UpdateItem(Guid id, ItemDTO itemDto)
+        public Item? UpdateItem(Guid id, ItemDTO itemDto)
         {
             var existingItem = _itemRepository.GetItemById(id);
             if (existingItem == null) return null;

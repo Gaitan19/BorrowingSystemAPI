@@ -28,7 +28,7 @@ namespace BorrowingSystemAPI.Controllers
             try
             {
                 var createdRequest = _requestService.CreateRequest(requestDto);
-                return CreatedAtAction(nameof(GetRequestById), new { id = createdRequest.Id }, createdRequest);
+                return Ok(createdRequest);
             }
             catch (ServiceException ex)
             {
