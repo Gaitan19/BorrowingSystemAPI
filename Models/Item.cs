@@ -8,6 +8,6 @@
         public int Quantity { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public List<ItemMovement> ItemMovements { get; set; } = new List<ItemMovement>();
+        public List<Movement> ItemMovements { get; set; } = new List<Movement>();
     }
 }
