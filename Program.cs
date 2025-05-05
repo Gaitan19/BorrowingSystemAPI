@@ -14,10 +14,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar la clave del token desde appsettings.json
 var key = Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"] ?? string.Empty);
 
-// Configurar servicios de controladores con autenticación global
 builder.Services.AddControllers(opt =>
 {
     var policy = new AuthorizationPolicyBuilder()
@@ -35,13 +33,12 @@ builder.Services.AddControllers()
 
 
 
-// Configurar Swagger con autenticación JWT
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Ingrese el token JWT en el formato: Bearer {token}",
+        Description = "Enter the JWT token in the formato: Bearer {token}",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
@@ -64,14 +61,12 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configurar base de datos
 builder.Services.AddDbContext<BorrowingContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.EnableSensitiveDataLogging(); // Habilita el registro de datos sensibles
+    options.EnableSensitiveDataLogging(); 
 });
 
-// Configurar AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
 // Repositories
@@ -95,7 +90,6 @@ builder.Services.AddScoped<MovementService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RequestService>();
 
-// Configurar autenticación JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -121,7 +115,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configurar el pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
