@@ -9,7 +9,7 @@ namespace BorrowingSystemAPI.DTOs
         public string Name { get; set; }
 
         [Required(ErrorMessage = "The Description field is required.")]
-        [MinLength(10, ErrorMessage = "The Description field must have at least 10 characters.")]
+        [MinLength(10, ErrorMessage = "The Description field must have at least 5 characters.")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "The Quantity field is required.")]
