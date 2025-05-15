@@ -5,7 +5,7 @@ namespace BorrowingSystemAPI.DTOs
     public class ItemDTO
     {
         [Required(ErrorMessage = "The Name field is required.")]
-        [MinLength(3, ErrorMessage = "The Name field must have at least 3 characters.")]
+        [MinLength(3, ErrorMessage = "The Name field must have at least 5 characters.")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "The Description field is required.")]
