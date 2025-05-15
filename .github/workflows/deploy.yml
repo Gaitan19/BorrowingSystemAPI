@@ -1,36 +1,35 @@
-name: Deploy to Somee via FTP
+name: Deploy to Somee
 
 on:
   push:
-    branches:
-      - main  # Cambia 'main' por la rama que deseas desplegar
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest  # Asegúrate de que la imagen de Windows tenga las herramientas necesarias
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'  # Ajusta la versión de .NET según tu proyecto
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'  # Ajusta a la versión que uses
 
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
 
-      - name: Publish
-        run: dotnet publish --no-build --configuration Release -o ./publish
+    - name: Publish
+      run: dotnet publish -c Release -o ./publish
 
-      - name: Deploy to Somee via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.0.0
-        with:
-          server: ftp://APIBorrowing.somee.com/www.APIBorrowing.somee.com
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./publish/
+    - name: Upload via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4
+      with:
+        server: APIBorrowing.somee.com  # Solo el nombre del host
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./publish/
+        server-dir: /www.APIBorrowing.somee.com/  # Directorio en el servidor
